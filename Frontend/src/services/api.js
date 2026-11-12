@@ -14,19 +14,15 @@ export const isWebBrowser =
   (window.location.protocol === 'http:' || window.location.protocol === 'https:') &&
   !isElectron;
 
-// Direct backend URL for standalone/desktop/Electron contexts or fallback
+// Backend URL configured via environment or Render deployment
 export const BACKEND_DIRECT_URL = (
   import.meta.env.VITE_API_BASE_URL ||
   import.meta.env.VITE_API_BASE ||
   import.meta.env.VITE_API_URL ||
-  'https://api.ficapp.in/subadmin-api'
+  'https://sub-admin-4pkg.onrender.com'
 ).trim().replace(/\/+$/, '');
 
-// In a web browser (Vercel production or Vite dev), default to relative '' so all requests
-// route through the same-origin proxy (/api/*). This completely prevents cross-origin
-// net::ERR_CONNECTION_RESET and CORS errors in browser devtools.
-// In Electron / file:// runtime, use the direct backend URL.
-export const API_BASE_URL = isWebBrowser ? '' : BACKEND_DIRECT_URL;
+export const API_BASE_URL = BACKEND_DIRECT_URL;
 
 // Sanitizes raw server/proxy/network error messages to keep UI clean and secure
 export function sanitizeErrorMessage(message, status) {
@@ -150,23 +146,8 @@ async function executeFetch(endpoint, options, headers) {
     candidateUrls = [endpoint];
   } else {
     const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-    const relativeUrl = cleanEndpoint.startsWith('/api') ? cleanEndpoint : `/api${cleanEndpoint}`;
     const directUrl = `${BACKEND_DIRECT_URL}${cleanEndpoint.startsWith('/api') ? '' : '/api'}${cleanEndpoint}`;
-
-    if (isWebBrowser) {
-      // In web browser: Prioritize same-origin relative proxy (/api/...) to eliminate ERR_CONNECTION_RESET
-      // Direct backend URL acts as a secondary fallback if the local or Vercel proxy fails.
-      candidateUrls = [relativeUrl];
-      if (directUrl !== relativeUrl) {
-        candidateUrls.push(directUrl);
-      }
-    } else {
-      // In Electron / desktop / file://: Relative paths cannot resolve; prioritize direct backend URL.
-      candidateUrls = [directUrl];
-      if (relativeUrl !== directUrl) {
-        candidateUrls.push(relativeUrl);
-      }
-    }
+    candidateUrls = [directUrl];
   }
 
   const isGet = !options.method || options.method.toUpperCase() === 'GET';

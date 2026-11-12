@@ -94,17 +94,12 @@ class RealtimeWebSocketClient {
     } else if (API_BASE_URL) {
       // Convert http(s) URL to ws(s)
       wsBase = API_BASE_URL.replace(/^http:\/\//i, 'ws://').replace(/^https:\/\//i, 'wss://');
+    } else if (BACKEND_DIRECT_URL) {
+      wsBase = BACKEND_DIRECT_URL.replace(/^http:\/\//i, 'ws://').replace(/^https:\/\//i, 'wss://');
     } else {
       const loc = window.location;
       const protocol = loc.protocol === 'https:' ? 'wss:' : 'ws:';
-      // In Vite dev mode, backend is typically on port 8006
-      if (loc.port === '5173' || loc.port === '3000') {
-        wsBase = `${protocol}//${loc.hostname}:8006`;
-      } else if (BACKEND_DIRECT_URL) {
-        wsBase = BACKEND_DIRECT_URL.replace(/^http:\/\//i, 'ws://').replace(/^https:\/\//i, 'wss://');
-      } else {
-        wsBase = `${protocol}//${loc.host}`;
-      }
+      wsBase = `${protocol}//${loc.host}`;
     }
 
     const cleanBase = wsBase.replace(/\/+$/, '');

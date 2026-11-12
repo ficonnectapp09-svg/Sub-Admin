@@ -8,7 +8,7 @@ const BACKEND_URL = (
   process.env.BACKEND_API_URL ||
   process.env.VITE_API_BASE_URL ||
   process.env.VITE_API_BASE ||
-  'https://api.ficapp.in/subadmin-api'
+  'https://sub-admin-4pkg.onrender.com'
 ).replace(/\/+$/, '');
 
 export default async function handler(req, res) {

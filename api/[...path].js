@@ -7,7 +7,7 @@ const https = require('https');
 const { URL } = require('url');
 const zlib = require('zlib');
 
-// Persistent connection pools with keep-alive for high throughput to AWS EC2 backend
+// Persistent connection pools with keep-alive for high throughput to Render backend
 const httpAgent = new http.Agent({ keepAlive: true, maxSockets: 100, keepAliveMsecs: 60000 });
 const httpsAgent = new https.Agent({ keepAlive: true, maxSockets: 100, keepAliveMsecs: 60000 });
 
@@ -15,7 +15,7 @@ const BACKEND_URL = (
   process.env.BACKEND_API_URL ||
   process.env.VITE_API_BASE_URL ||
   process.env.VITE_API_BASE ||
-  'https://api.ficapp.in/subadmin-api'
+  'https://sub-admin-4pkg.onrender.com'
 ).replace(/\/+$/, '');
 
 module.exports = async function handler(req, res) {

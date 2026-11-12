@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { StatusBadge } from './Badge';
 import { dataService } from '../services/dataService';
+import { API_BASE_URL } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { formatAddress } from '../utils/territoryHelper';
 import { canAdminApproveAgentRequest } from '../utils/permissions';
@@ -72,8 +73,9 @@ export function AgentApprovalModal({ isOpen, onClose, agent, onAgentUpdated }) {
 
   const resolveMediaUrl = (url) => {
     if (!url) return '';
-    if (url.startsWith('http://') || url.startsWith('https://')) return url;
-    return url.startsWith('/') ? url : `/${url}`;
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:') || url.startsWith('blob:')) return url;
+    const normalized = url.startsWith('/') ? url : `/${url}`;
+    return API_BASE_URL ? `${API_BASE_URL}${normalized}` : normalized;
   };
 
   const handleApprove = async () => {

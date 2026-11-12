@@ -40,13 +40,6 @@ const app = express();
 const PORT = process.env.PORT || 8006;
 
 // Middleware
-// 1. Strip /subadmin-api prefix if proxied by Nginx/Vercel without path rewriting
-app.use((req, res, next) => {
-  if (req.url.startsWith('/subadmin-api')) {
-    req.url = req.url.replace(/^\/subadmin-api/, '') || '/';
-  }
-  next();
-});
 
 // 2. Comprehensive CORS configuration
 const corsOptions = {

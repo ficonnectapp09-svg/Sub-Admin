@@ -14,9 +14,9 @@ export default defineConfig(({ mode }) => ({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8006',
+        target: 'https://sub-admin-4pkg.onrender.com',
         changeOrigin: true,
-        secure: false,
+        secure: true,
         timeout: 60000,
         proxyTimeout: 60000,
         configure: (proxy, _options) => {
@@ -29,9 +29,9 @@ export default defineConfig(({ mode }) => ({
         }
       },
       '/uploads': {
-        target: 'http://127.0.0.1:8006',
+        target: 'https://sub-admin-4pkg.onrender.com',
         changeOrigin: true,
-        secure: false
+        secure: true
       }
     }
   },
