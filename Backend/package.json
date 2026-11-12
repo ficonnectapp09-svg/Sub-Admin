@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "node --check server.js",
+    "build": "npm install --no-audit --no-fund && node --check server.js",
     "dev": "nodemon server.js",
     "test": "node tests/test_rbac_authentication.js",
     "test:rbac": "node tests/test_rbac_authentication.js",
