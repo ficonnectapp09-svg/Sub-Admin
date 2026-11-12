@@ -95,7 +95,11 @@ const SECRET_RULES = [
   },
   {
     name: 'Hardcoded Sensitive Password / Secret',
-    regex: /(?:DB_PASSWORD|API_SECRET|PRIVATE_API_KEY|AUTH_SECRET)\s*[:=]\s*['"`](?!<|your_|changeme|example)[^'"`\s]{8,}['"`]/i,
+    regex: /(?:(?:DB_PASSWORD|API_SECRET|PRIVATE_API_KEY|AUTH_SECRET|CLOUDINARY_API_SECRET)\s*[:=]\s*['"`](?!<|your_|changeme|example)[^'"`\s]{8,}['"`]|^(?:DB_PASSWORD|API_SECRET|PRIVATE_API_KEY|AUTH_SECRET|CLOUDINARY_API_SECRET)=(?!<|your_|changeme|example)[^\s'"]{8,})/im,
+  },
+  {
+    name: 'Cloudinary URL with Credentials',
+    regex: /cloudinary:\/\/[0-9]+:(?!<)[^@\s<'"`]+@[a-zA-Z0-9_-]+/,
   },
 ];
 
