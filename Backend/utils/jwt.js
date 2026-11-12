@@ -1,6 +1,19 @@
+const path = require('path');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_jwt_admin_management_key_2026';
+if (!process.env.JWT_SECRET) {
+  require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+}
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
+function getJwtSecret() {
+  const secret = process.env.JWT_SECRET || JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET environment variable is not configured.');
+  }
+  return secret;
+}
 
 function generateToken(user) {
   const payload = {
@@ -24,11 +37,11 @@ function generateToken(user) {
     requiresApproval: user.requiresApproval !== undefined ? Boolean(user.requiresApproval) : false
   };
 
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+  return jwt.sign(payload, getJwtSecret(), { expiresIn: '7d' });
 }
 
 function verifyToken(token) {
-  return jwt.verify(token, JWT_SECRET);
+  return jwt.verify(token, getJwtSecret());
 }
 
 module.exports = {

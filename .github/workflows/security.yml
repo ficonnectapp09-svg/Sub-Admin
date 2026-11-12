@@ -1,0 +1,61 @@
+name: Git Security & Secret Protection
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  secret-and-file-guard:
+    name: Secret Scan & Prohibited File Guard
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate .gitignore, prohibited files & secret patterns
+        run: node scripts/git-security-scan.mjs --mode=ci
+
+      - name: Gitleaks Secret Scan (values redacted)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_REDACT: 'true'
+
+  dependency-audit:
+    name: Dependency Vulnerability Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Audit root dependencies
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Audit Backend dependencies
+        working-directory: Backend
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Audit Frontend dependencies
+        working-directory: Frontend
+        run: npm audit --audit-level=high
+        continue-on-error: true
+

@@ -3,28 +3,76 @@ node_modules/
 Frontend/node_modules/
 Backend/node_modules/
 
-# Production build files
+# Production & coverage build files
 dist/
 build/
+coverage/
 Frontend/dist/
 
 # Electron release/packager output
 Frontend/release/
 release/
 
+# Cache & temporary files
+.cache/
+.tmp/
+.temp/
 
-# Environment variables
+# Environment variables (allow safe .env.example templates only)
 .env
+.env.*
+!.env.example
 Backend/.env
+Backend/.env.*
+!Backend/.env.example
 Frontend/.env
-.env.local
-.env.*.local
+Frontend/.env.*
+!Frontend/.env.example
+
+# Private project instruction & changelog files
+AGENT.md
+AGENTS.md
+CHANGELOG.md
 
 # Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 *.log
+logs/
+
+# Private keys & certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Database files & backups
+*.dump
+*.bson
+*.backup
+*.sqlite
+*.sqlite3
+database-backup/
+db-backup/
+backups/
+mongodb-dumps/
+Backend/data/*.json
+
+# Private documents & runtime uploads
+private-uploads/
+secure-uploads/
+customer-documents/
+vendor-documents/
+kyc-documents/
+aadhaar-documents/
+pan-documents/
+private-storage/
+Backend/uploads/*
+!Backend/uploads/.gitkeep
 
 # Editor directories and files
 .vscode/
@@ -36,6 +84,3 @@ yarn-error.log*
 *.sw?
 .DS_Store
 Thumbs.db
-
-# Temp data
-Backend/data/[0-9]*.json

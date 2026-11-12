@@ -1,8 +1,6 @@
-const jwt = require('jsonwebtoken');
+const { verifyToken } = require('../utils/jwt');
 const notificationService = require('../services/notificationService');
 const { db } = require('../config/db');
-
-const JWT_SECRET = process.env.JWT_SECRET || 'ams_jwt_secret_dev_key_2024';
 
 /**
  * Helper to extract user from Authorization header or ?token query param (useful for EventSource SSE)
@@ -19,7 +17,7 @@ function extractUserFromRequest(req) {
   if (!token) return null;
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = verifyToken(token);
     // Find active user record
     const allUsers = Array.from(db.users || []);
     const user = allUsers.find(u => (u.id || u._id) === (decoded.id || decoded._id) || u.email === decoded.email);

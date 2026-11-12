@@ -1,0 +1,63 @@
+# Environment secrets (keep .env.example only)
+.env
+.env.*
+!.env.example
+
+# Private project instructions
+AGENT.md
+AGENTS.md
+CHANGELOG.md
+
+# Dependencies, build outputs & cache
+node_modules/
+dist/
+build/
+coverage/
+.cache/
+.tmp/
+.temp/
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Private keys & certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Database dumps, exports & backups
+*.dump
+*.bson
+*.backup
+*.sqlite
+*.sqlite3
+database-backup/
+db-backup/
+backups/
+mongodb-dumps/
+data/*.json
+
+# Private documents & runtime uploads
+uploads/*
+!uploads/.gitkeep
+private-uploads/
+secure-uploads/
+customer-documents/
+vendor-documents/
+kyc-documents/
+aadhaar-documents/
+pan-documents/
+private-storage/
+
+# OS files
+.DS_Store
+Thumbs.db
+
