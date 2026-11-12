@@ -131,45 +131,6 @@ app.get('/api/health', (req, res) => {
 // Integrated Field Manager Routes
 app.use('/api/managers', managerDirectoryRoutes);
 app.use('/api/audit-logs', auditRoutes);
-// S3 Media Viewing Endpoint with HTTP 304 Caching & Range Support
-app.get(['/api/media/s3/:key(*)', '/api/uploads/s3/:key(*)'], async (req, res) => {
-  try {
-    const rawKey = req.params.key || req.params[0] || '';
-    const cleanKey = decodeURIComponent(rawKey).replace(/^\/+/, '');
-
-    if (!cleanKey || cleanKey.includes('..') || !/^[a-zA-Z0-9_\-\/.]+\.(jpg|jpeg|png|webp|gif|avif|svg|pdf|doc|docx|xls|xlsx|csv|txt|webm|mp3|wav|m4a|ogg|aac)$/i.test(cleanKey)) {
-      return res.status(400).json({ error: 'Invalid or disallowed media key.' });
-    }
-
-    const { getObjectStream } = require('./config/s3');
-    const streamRes = await getObjectStream(cleanKey);
-    if (!streamRes.success || !streamRes.body) {
-      return res.status(404).json({ error: streamRes.error || 'Media object not found.' });
-    }
-
-    if (streamRes.etag) {
-      res.setHeader('ETag', streamRes.etag);
-      if (req.headers['if-none-match'] === streamRes.etag) {
-        return res.status(304).end();
-      }
-    }
-
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-    res.setHeader('Accept-Ranges', 'bytes');
-    res.setHeader('Content-Type', streamRes.contentType || 'application/octet-stream');
-    if (streamRes.contentLength) {
-      res.setHeader('Content-Length', streamRes.contentLength.toString());
-    }
-    res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
-
-    streamRes.body.pipe(res);
-  } catch (err) {
-    console.error('[Subadmin Media Stream Error]:', err.message);
-    if (!res.headersSent) res.status(500).json({ error: 'Failed to retrieve media.' });
-  }
-});
-
 app.use('/api/uploads', uploadRoutes);
 app.use('/api/shop-visits', shopVisitRoutes);
 app.use('/api/qc-tasks', qcTaskRoutes);

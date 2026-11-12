@@ -1,4 +1,4 @@
-const { uploadToS3 } = require('../config/s3');
+const { uploadFile } = require('../config/storage');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { db } = require('../config/db');
@@ -1317,8 +1317,8 @@ const uploadAvatar = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No image file uploaded.' });
     }
-    const s3Result = await uploadToS3(req.file.buffer || req.file.path, 'subadmin_avatars', req.file.originalname);
-    const fileUrl = s3Result.url;
+    const uploadResult = await uploadFile(req.file.buffer || req.file.path, 'subadmin_avatars', req.file.originalname);
+    const fileUrl = uploadResult.url;
     res.json({
       success: true,
       message: 'Profile photo uploaded successfully',
@@ -1341,15 +1341,15 @@ const uploadDocument = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No document file uploaded.' });
     }
-    const s3Result = await uploadToS3(req.file.buffer || req.file.path, 'subadmin_docs', req.file.originalname);
-    const fileUrl = s3Result.url;
+    const uploadResult = await uploadFile(req.file.buffer || req.file.path, 'subadmin_docs', req.file.originalname);
+    const fileUrl = uploadResult.url;
     res.json({
       success: true,
-      message: 'Document uploaded successfully to AWS S3',
+      message: 'Document uploaded successfully',
       file: {
         name: req.file.originalname,
-        filename: s3Result.key,
-        key: s3Result.key,
+        filename: uploadResult.key,
+        key: uploadResult.key,
         url: fileUrl,
         secure_url: fileUrl,
         size: req.file.size,

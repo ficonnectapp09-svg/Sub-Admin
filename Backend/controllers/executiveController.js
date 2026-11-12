@@ -1,4 +1,4 @@
-const { uploadToS3 } = require('../config/s3');
+const { uploadFile } = require('../config/storage');
 const { db, filterByLocation, resolveStateFromDistrict } = require('../config/db');
 const { getMongoDb } = require('../config/mongo');
 const bcrypt = require('bcryptjs');
@@ -974,14 +974,14 @@ async function addAgent(req, res) {
     let educationalCertificate = docs.educationalCertificate || docs.educationalCertificates || null;
     let bankProof = docs.bankProof || docs.cancelledCheque || docs.bankPassbookPhoto || null;
 
-    // Upload base64 KYC documents to AWS S3
+    // Save base64 KYC documents to local storage
     const uploadKycDoc = async (docVal, name) => {
       if (docVal && typeof docVal === 'string' && docVal.startsWith('data:')) {
         try {
-          const s3Res = await uploadToS3(docVal, 'agent_docs/kyc', `exec_${Date.now()}_${name}`);
-          return s3Res.url || s3Res.key;
+          const uploadRes = await uploadFile(docVal, 'agent_docs/kyc', `exec_${Date.now()}_${name}`);
+          return uploadRes.url || uploadRes.key;
         } catch (e) {
-          console.error(`Failed to upload ${name} to S3:`, e);
+          console.error(`Failed to store ${name}:`, e);
           return docVal;
         }
       }

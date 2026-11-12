@@ -1,4 +1,4 @@
-const { uploadToS3 } = require('../config/s3');
+const { uploadFile } = require('../config/storage');
 const { db, filterByLocation } = require('../config/db');
 
 exports.createShopVisit = async (req, res) => {
@@ -40,19 +40,19 @@ exports.createShopVisit = async (req, res) => {
 
     if (finalShopPhoto && typeof finalShopPhoto === 'string' && finalShopPhoto.startsWith('data:')) {
       try {
-        const s3Res = await uploadToS3(finalShopPhoto, 'shop_visits', `shop_${Date.now()}`);
-        finalShopPhoto = s3Res.url || s3Res.key;
+        const uploadRes = await uploadFile(finalShopPhoto, 'shop_visits', `shop_${Date.now()}`);
+        finalShopPhoto = uploadRes.url || uploadRes.key;
       } catch (err) {
-        console.error('Failed to upload shopPhoto to S3:', err);
+        console.error('Failed to store shopPhoto:', err);
       }
     }
 
     if (finalVoiceNote && typeof finalVoiceNote === 'string' && finalVoiceNote.startsWith('data:')) {
       try {
-        const s3Res = await uploadToS3(finalVoiceNote, 'voice_notes', `voice_${Date.now()}`);
-        finalVoiceNote = s3Res.url || s3Res.key;
+        const uploadRes = await uploadFile(finalVoiceNote, 'voice_notes', `voice_${Date.now()}`);
+        finalVoiceNote = uploadRes.url || uploadRes.key;
       } catch (err) {
-        console.error('Failed to upload voiceNote to S3:', err);
+        console.error('Failed to store voiceNote:', err);
       }
     }
 
