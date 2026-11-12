@@ -8,7 +8,7 @@
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "install:all": "npm install && cd Backend && npm install && cd ../Frontend && npm install",
     "build": "cd Frontend && npm run build",
-    "prepare": "git config core.hooksPath .githooks",
+    "prepare": "node -e \"const fs=require('fs'),cp=require('child_process');if(fs.existsSync('.git'))try{cp.execSync('git config core.hooksPath .githooks',{stdio:'ignore'})}catch{}\"",
     "security:scan": "node scripts/git-security-scan.mjs --mode=all"
   },
   "keywords": ["admin", "hierarchy", "role-based", "location-based", "express", "react"],
