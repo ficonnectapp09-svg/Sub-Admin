@@ -151,7 +151,7 @@ async function executeFetch(endpoint, options, headers) {
   }
 
   const isGet = !options.method || options.method.toUpperCase() === 'GET';
-  const maxRetries = options.retries ?? (isGet ? 2 : 0);
+  const maxRetries = options.retries ?? (isGet ? 1 : 0);
 
   const noAutoLogoutEndpoints = ['/auth/login', '/auth/me', '/auth/register'];
   const isNoAutoLogout = noAutoLogoutEndpoints.some((e) => endpoint.includes(e));
@@ -286,8 +286,9 @@ export async function apiRequest(endpoint, options = {}) {
     const now = Date.now();
 
     if (cached && (now - cached.timestamp < ttl)) {
-      // Background revalidation if older than 20 seconds
-      if (now - cached.timestamp > 20000 && !inFlightRequests.has(cacheKey)) {
+      // Background revalidation only when cache exceeds 60% of its TTL (min 30s)
+      const revalidateAfterMs = Math.max(30000, Math.floor(ttl * 0.6));
+      if (now - cached.timestamp > revalidateAfterMs && !inFlightRequests.has(cacheKey)) {
         const bgPromise = executeFetch(cleanEndpoint, options, headers)
           .then((freshData) => {
             apiCache.set(cacheKey, { data: freshData, timestamp: Date.now() });
@@ -299,11 +300,11 @@ export async function apiRequest(endpoint, options = {}) {
       }
       return cached.data;
     }
+  }
 
-    // Deduplicate in-flight requests
-    if (inFlightRequests.has(cacheKey)) {
-      return inFlightRequests.get(cacheKey);
-    }
+  // Deduplicate concurrent identical in-flight GET requests (even when ttl === 0)
+  if (isGet && !options.skipCache && inFlightRequests.has(cacheKey)) {
+    return inFlightRequests.get(cacheKey);
   }
 
   const fetchPromise = executeFetch(cleanEndpoint, options, headers)
