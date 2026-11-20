@@ -11,8 +11,38 @@ import { Login } from '../pages/auth/Login';
 import { RegistrationStatus } from '../pages/auth/RegistrationStatus';
 import { AccessDenied } from '../pages/common/AccessDenied';
 
-// Helper for dynamic code splitting of named component exports
-const lazyNamed = (importFn, name) => React.lazy(() => importFn().then(mod => ({ default: mod[name] })));
+// Helper for dynamic code splitting of named component exports with auto-retry on stale deployment chunks
+function lazyWithRetry(importFn, name) {
+  return React.lazy(async () => {
+    try {
+      const mod = await importFn();
+      return { default: name ? mod[name] : (mod.default || mod) };
+    } catch (error) {
+      const msg = String(error?.message || error || '');
+      const isChunkError =
+        msg.includes('Failed to fetch dynamically imported module') ||
+        msg.includes('Expected a JavaScript-or-Wasm module script') ||
+        msg.includes('Importing a module script failed') ||
+        msg.includes('error loading dynamically imported module') ||
+        msg.includes('Loading chunk') ||
+        msg.includes('MIME type');
+
+      if (isChunkError && typeof window !== 'undefined') {
+        const key = 'ams_chunk_reload_' + (name || 'common');
+        const last = sessionStorage.getItem(key);
+        const now = Date.now();
+        // Allow one auto-reload per 15s to prevent infinite reload loops
+        if (!last || now - parseInt(last, 10) > 15000) {
+          sessionStorage.setItem(key, String(now));
+          window.location.reload();
+          return new Promise(() => {}); // Hold until reload executes
+        }
+      }
+      throw error;
+    }
+  });
+}
+const lazyNamed = lazyWithRetry;
 
 // Route Loading Spinner fallback
 function RouteLoadingSpinner() {
@@ -144,7 +174,7 @@ const AgentRequestsPage = lazyNamed(() => import('../pages/requests/AgentRequest
 const VendorRequestsPage = lazyNamed(() => import('../pages/requests/VendorRequestsPage'), 'VendorRequestsPage');
 
 // Common Notifications Page (lazy loaded on demand)
-const NotificationsPage = React.lazy(() => import('../pages/common/Notifications'));
+const NotificationsPage = lazyWithRetry(() => import('../pages/common/Notifications'));
 
 function RootRedirect() {
   const { user, isAuthenticated, loading } = useAuth();

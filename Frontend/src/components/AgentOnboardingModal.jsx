@@ -800,7 +800,7 @@ export function AgentOnboardingModal({ isOpen, onClose, onSuccess, level }) {
                   {fieldErrors.password ? (
                     <p className="text-[11px] text-rose-500 mt-1 font-medium">{fieldErrors.password}</p>
                   ) : (
-                    <p className="text-[10px] text-slate-400 mt-1">Min 6 chars, >= 1 uppercase, >= 1 digit, >= 1 symbol</p>
+                    <p className="text-[10px] text-slate-400 mt-1">Min 6 chars, at least 1 uppercase, 1 digit, 1 symbol</p>
                   )}
                 </div>
 
