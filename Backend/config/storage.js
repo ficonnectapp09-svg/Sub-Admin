@@ -144,8 +144,8 @@ function getUploadPublicUrl(objectKey) {
   if (!objectKey) return '';
   if (objectKey.startsWith('http://') || objectKey.startsWith('https://')) return objectKey;
   const cleanKey = objectKey.replace(/^\/+/, '');
-  const backendBase = process.env.BACKEND_URL || 'https://sub-admin-4pkg.onrender.com';
-  return `${backendBase.replace(/\/+$/, '')}/uploads/${cleanKey}`;
+  const backendBase = (process.env.BACKEND_URL || '').replace(/\/+$/, '');
+  return backendBase ? `${backendBase}/uploads/${cleanKey}` : `/uploads/${cleanKey}`;
 }
 
 function uploadBufferToCloudinary(client, buffer, options) {

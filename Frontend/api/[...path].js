@@ -5,10 +5,11 @@ import { URL } from 'url';
 import zlib from 'zlib';
 
 const BACKEND_URL = (
+  process.env.BACKEND_URL ||
   process.env.BACKEND_API_URL ||
   process.env.VITE_API_BASE_URL ||
   process.env.VITE_API_BASE ||
-  'https://sub-admin-4pkg.onrender.com'
+  ''
 ).replace(/\/+$/, '');
 
 export default async function handler(req, res) {
@@ -22,6 +23,15 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
     res.statusCode = 200;
     return res.end();
+  }
+
+  if (!BACKEND_URL) {
+    res.statusCode = 500;
+    res.setHeader('Content-Type', 'application/json');
+    return res.end(JSON.stringify({
+      success: false,
+      message: 'Backend server URL is not configured. Please set BACKEND_URL or VITE_API_BASE_URL environment variable.'
+    }));
   }
 
   try {
