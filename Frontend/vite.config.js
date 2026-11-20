@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
     env.BACKEND_URL ||
     process.env.VITE_API_BASE_URL ||
     process.env.BACKEND_URL ||
-    'http://127.0.0.1:8006'
+    'https://sub-admin-cxjq.onrender.com'
   ).replace(/\/+$/, '');
 
   return {

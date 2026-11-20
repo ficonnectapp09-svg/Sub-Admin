@@ -9,7 +9,7 @@ const BACKEND_URL = (
   process.env.BACKEND_API_URL ||
   process.env.VITE_API_BASE_URL ||
   process.env.VITE_API_BASE ||
-  ''
+  'https://sub-admin-cxjq.onrender.com'
 ).replace(/\/+$/, '');
 
 export default async function handler(req, res) {
@@ -23,15 +23,6 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
     res.statusCode = 200;
     return res.end();
-  }
-
-  if (!BACKEND_URL) {
-    res.statusCode = 500;
-    res.setHeader('Content-Type', 'application/json');
-    return res.end(JSON.stringify({
-      success: false,
-      message: 'Backend server URL is not configured. Please set BACKEND_URL or VITE_API_BASE_URL environment variable.'
-    }));
   }
 
   try {
@@ -64,7 +55,11 @@ export default async function handler(req, res) {
     const requestHeaders = { ...req.headers };
     delete requestHeaders.host;
     delete requestHeaders.connection;
-    requestHeaders['x-forwarded-host'] = req.headers.host;
+    if (req.headers.host) {
+      requestHeaders['x-forwarded-host'] = req.headers.host;
+    } else {
+      delete requestHeaders['x-forwarded-host'];
+    }
     requestHeaders['accept-encoding'] = 'identity';
 
     let bodyBuffer = null;

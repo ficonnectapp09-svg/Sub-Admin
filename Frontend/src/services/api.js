@@ -14,12 +14,12 @@ export const isWebBrowser =
   (window.location.protocol === 'http:' || window.location.protocol === 'https:') &&
   !isElectron;
 
-// Backend URL configured via environment variable VITE_API_BASE_URL
+// Direct backend URL for standalone/desktop/Electron contexts or fallback
 export const BACKEND_DIRECT_URL = (
   import.meta.env.VITE_API_BASE_URL ||
   import.meta.env.VITE_API_BASE ||
   import.meta.env.VITE_API_URL ||
-  ''
+  'https://sub-admin-cxjq.onrender.com'
 ).trim().replace(/\/+$/, '');
 
 export const API_BASE_URL = BACKEND_DIRECT_URL;

@@ -1,4 +1,8 @@
 {
+  "env": {
+    "BACKEND_URL": "https://sub-admin-cxjq.onrender.com",
+    "VITE_API_BASE_URL": "https://sub-admin-cxjq.onrender.com"
+  },
   "rewrites": [
     {
       "source": "/api/(.*)",
